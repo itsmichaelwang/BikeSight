@@ -10,11 +10,18 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +41,8 @@ public class MainActivity extends Activity {
     private static final int REQUEST_ENABLE_BT = 1;
 
     private TextView mTextView;
+    private ImageView mImageView;
+    private Animation animation;
 
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do not override an event, the default behavior is to do nothing.
@@ -41,6 +50,12 @@ public class MainActivity extends Activity {
 
         private Arm mArm = Arm.UNKNOWN;
         private XDirection mXDirection = XDirection.UNKNOWN;
+        private Time startTime = null;
+        private boolean isEngaged = false;
+        private boolean isVibrating = false;
+        private Pose currentPose;
+
+
 
         // onConnect() is called whenever a Myo has been connected.
         @Override
@@ -104,18 +119,78 @@ public class MainActivity extends Activity {
             float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
             float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
 
+            TextView tvRoll = (TextView) findViewById(R.id.textView);
+            TextView tvPitch = (TextView) findViewById(R.id.textView2);
+            TextView tvYaw = (TextView) findViewById(R.id.textView3);
+
             // Adjust roll and pitch for the orientation of the Myo on the arm.
             if (mXDirection == XDirection.TOWARD_ELBOW) {
                 roll *= -1;
                 pitch *= -1;
             }
 
-            if (yaw > 125) {
-                mTextView.setText("Turning left");
+            tvRoll.setText(Float.toString(roll));
+            tvPitch.setText(Float.toString(pitch));
+            tvYaw.setText(Float.toString(yaw));
+
+            float limit = 500;
+
+            if (Math.abs(pitch) < 30 && currentPose == Pose.FIST) {
+                if (startTime == null) {
+                    startTime = new Time();
+                    startTime.setToNow();
+                } else {
+                    Time now = new Time();
+                    now.setToNow();
+                    float holdTime = now.toMillis(true) - startTime.toMillis(true);
+                    if (holdTime > limit) {
+                        if (!isEngaged) {
+                            myo.vibrate(Myo.VibrationType.MEDIUM);
+                            isEngaged = true;
+                        }
+                        mTextView.setText("");
+                        mImageView.setImageResource(R.drawable.left_arrow);
+                        mImageView.startAnimation(animation);
+                        startTime = now;
+                    }
+                }
             } else if (pitch < -50) {
-                mTextView.setText("Turning right");
+                if (startTime == null) {
+                    startTime = new Time();
+                    startTime.setToNow();
+                } else {
+                    Time now = new Time();
+                    now.setToNow();
+                    float holdTime = now.toMillis(true) - startTime.toMillis(true);
+                    if (holdTime > limit) {
+
+                        if (!isEngaged) {
+                            myo.vibrate(Myo.VibrationType.MEDIUM);
+                            isEngaged = true;
+                        }
+                        mTextView.setText("");
+                        mImageView.setImageResource(R.drawable.right_arrow);
+                        mImageView.startAnimation(animation);
+                        startTime = now;
+                    }
+                }
             } else {
-                mTextView.setText("Cycling");
+                if (isEngaged) {
+                    Time now = new Time();
+                    now.setToNow();
+                    float holdTime = now.toMillis(true) - startTime.toMillis(true);
+                    if (holdTime > limit) {
+                        mTextView.setText("Cycling");
+                        mImageView.setImageDrawable(null);
+                        startTime = null;
+                        isEngaged = false;
+                    }
+                } else {
+                    mTextView.setText("Cycling");
+                    mImageView.setImageDrawable(null);
+                    startTime = null;
+                    isEngaged = false;
+                }
             }
         }
 
@@ -124,6 +199,7 @@ public class MainActivity extends Activity {
         public void onPose(Myo myo, long timestamp, Pose pose) {
             // Handle the cases of the Pose enumeration, and change the text of the text view
             // based on the pose we receive.
+            currentPose = pose;
             switch (pose) {
                 case UNKNOWN:
                     break;
@@ -155,6 +231,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mTextView = (TextView) findViewById(R.id.text);
+        mImageView = (ImageView) findViewById(R.id.imageView);
 
         // First, we initialize the Hub singleton with an application identifier.
         Hub hub = Hub.getInstance();
@@ -167,6 +244,17 @@ public class MainActivity extends Activity {
 
         // Next, register for DeviceListener callbacks.
         hub.addListener(mListener);
+
+        // Create animation
+        animation = new AlphaAnimation(1, 0);
+        animation.setDuration(500);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setRepeatMode(Animation.REVERSE);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
     }
 
     @Override
