@@ -10,10 +10,13 @@
         android:id="@+id/text"
         android:text="@string/instructions"
         android:textSize="20dp"
-        android:layout_width="wrap_content"
+        android:layout_width="358dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        tools:ignore="SpUsage"/>
+        tools:ignore="SpUsage"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#00ffff" />
 
 
 
@@ -21,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
         android:id="@+id/textView"
         android:layout_gravity="left|top" />
 
@@ -29,7 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
         android:id="@+id/textView2"
         android:layout_gravity="center_horizontal|top" />
 
@@ -37,7 +38,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
         android:id="@+id/textView3"
         android:layout_gravity="right|top" />
 
