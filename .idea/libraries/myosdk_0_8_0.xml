@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="myosdk-0.8.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/exploded-aar/com.thalmic/myosdk/0.8.0/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/exploded-aar/com.thalmic/myosdk/0.8.0/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
