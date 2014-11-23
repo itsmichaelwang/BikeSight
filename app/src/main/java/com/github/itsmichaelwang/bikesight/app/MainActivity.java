@@ -249,7 +249,7 @@ public class MainActivity extends Activity {
 
         // Create animation
         animation = new AlphaAnimation(1, 0);
-        animation.setDuration(500);
+        animation.setDuration(250);
         animation.setInterpolator(new LinearInterpolator());
         animation.setRepeatCount(Animation.INFINITE);
         animation.setRepeatMode(Animation.REVERSE);
