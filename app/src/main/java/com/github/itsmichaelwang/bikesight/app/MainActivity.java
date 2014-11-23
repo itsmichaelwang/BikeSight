@@ -135,7 +135,7 @@ public class MainActivity extends Activity {
 
             float limit = 500;
 
-            if (Math.abs(pitch) < 30 && currentPose == Pose.FIST) {
+            if (Math.abs(pitch) < 15 && currentPose == Pose.FIST) {
                 if (startTime == null) {
                     startTime = new Time();
                     startTime.setToNow();
@@ -180,14 +180,16 @@ public class MainActivity extends Activity {
                     now.setToNow();
                     float holdTime = now.toMillis(true) - startTime.toMillis(true);
                     if (holdTime > limit) {
-                        mTextView.setText("Cycling");
-                        mImageView.setImageDrawable(null);
+                        mTextView.setText("");
+                        mImageView.setImageResource(R.drawable.bike);
+                        mImageView.clearAnimation();
                         startTime = null;
                         isEngaged = false;
                     }
                 } else {
-                    mTextView.setText("Cycling");
-                    mImageView.setImageDrawable(null);
+                    mTextView.setText("");
+                    mImageView.setImageResource(R.drawable.bike);
+                    mImageView.clearAnimation();
                     startTime = null;
                     isEngaged = false;
                 }
