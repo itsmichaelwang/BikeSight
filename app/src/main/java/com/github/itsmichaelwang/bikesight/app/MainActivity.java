@@ -174,6 +174,26 @@ public class MainActivity extends Activity {
                         startTime = now;
                     }
                 }
+            } else if (Math.abs(roll) < 50 && pitch > 20 && currentPose == Pose.FIST) {
+                if (startTime == null) {
+                    startTime = new Time();
+                    startTime.setToNow();
+                } else {
+                    Time now = new Time();
+                    now.setToNow();
+                    float holdTime = now.toMillis(true) - startTime.toMillis(true);
+                    if (holdTime > limit) {
+
+                        if (!isEngaged) {
+                            myo.vibrate(Myo.VibrationType.MEDIUM);
+                            isEngaged = true;
+                        }
+                        mTextView.setText("");
+                        mImageView.setImageResource(R.drawable.stop);
+                        mImageView.startAnimation(animation);
+                        startTime = now;
+                    }
+                }
             } else {
                 if (isEngaged) {
                     Time now = new Time();
